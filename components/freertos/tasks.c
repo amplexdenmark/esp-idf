@@ -4419,10 +4419,12 @@ static void prvCheckTasksWaitingTermination( void )
         #if ( configUSE_MUTEXES == 1 )
             {
                 pxTaskStatus->uxBasePriority = pxTCB->uxBasePriority;
+                pxTaskStatus->uxNumLocks = pxTCB->uxMutexesHeld;
             }
         #else
             {
                 pxTaskStatus->uxBasePriority = 0;
+                pxTaskStatus->uxNumLocks = 0;
             }
         #endif
 
@@ -5276,7 +5278,16 @@ static void prvResetNextTaskUnblockTime( void )
 
                 /* Write the rest of the string. */
 #if configTASKLIST_INCLUDE_COREID
-                sprintf( pcWriteBuffer, "\t%c\t%u\t%u\t%u\t%hd\r\n", cStatus, ( unsigned int ) pxTaskStatusArray[ x ].uxCurrentPriority, ( unsigned int ) pxTaskStatusArray[ x ].usStackHighWaterMark, ( unsigned int ) pxTaskStatusArray[ x ].xTaskNumber, ( int ) pxTaskStatusArray[ x ].xCoreID );
+                char prio[10];
+                sprintf(prio, "%2u", ( unsigned int ) pxTaskStatusArray[ x ].uxCurrentPriority);
+                if (pxTaskStatusArray[ x ].uxCurrentPriority != pxTaskStatusArray[ x ].uxBasePriority)
+                    sprintf(prio + strlen(prio), "(%u)", ( unsigned int ) pxTaskStatusArray[ x ].uxBasePriority);
+				sprintf( pcWriteBuffer, "\t%c\t%s\t%u\t%u\t%hd\t%hd\r\n",
+                        cStatus, prio,
+                        ( unsigned int ) pxTaskStatusArray[ x ].usStackHighWaterMark,
+                        ( unsigned int ) pxTaskStatusArray[ x ].xTaskNumber,
+                        ( int ) pxTaskStatusArray[ x ].xCoreID,
+                        ( unsigned int ) pxTaskStatusArray[ x ].uxNumLocks );
 #else
                 sprintf( pcWriteBuffer, "\t%c\t%u\t%u\t%u\r\n", cStatus, ( unsigned int ) pxTaskStatusArray[ x ].uxCurrentPriority, ( unsigned int ) pxTaskStatusArray[ x ].usStackHighWaterMark, ( unsigned int ) pxTaskStatusArray[ x ].xTaskNumber ); /*lint !e586 sprintf() allowed as this is compiled with many compilers and this is a utility function only - not part of the core kernel implementation. */
 #endif
