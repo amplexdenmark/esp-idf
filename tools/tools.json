@@ -66,7 +66,7 @@
       ],
       "export_vars": {},
       "info_url": "https://github.com/espressif/crosstool-NG",
-      "install": "always",
+      "install": "on_request",
       "license": "GPL-3.0-with-GCC-exception",
       "name": "xtensa-esp32s2-elf",
       "version_cmd": [
@@ -122,7 +122,7 @@
       ],
       "export_vars": {},
       "info_url": "https://github.com/espressif/crosstool-NG",
-      "install": "always",
+      "install": "on_request",
       "license": "GPL-3.0-with-GCC-exception",
       "name": "xtensa-esp32s3-elf",
       "version_cmd": [
@@ -178,7 +178,7 @@
       ],
       "export_vars": {},
       "info_url": "https://github.com/espressif/crosstool-NG",
-      "install": "always",
+      "install": "on_request",
       "license": "GPL-3.0-with-GCC-exception",
       "name": "riscv32-esp-elf",
       "version_cmd": [
@@ -234,7 +234,7 @@
       ],
       "export_vars": {},
       "info_url": "https://github.com/espressif/binutils-esp32ulp",
-      "install": "always",
+      "install": "on_request",
       "license": "GPL-2.0-or-later",
       "name": "esp32ulp-elf",
       "platform_overrides": [
@@ -292,7 +292,7 @@
       ],
       "export_vars": {},
       "info_url": "https://github.com/espressif/binutils-esp32ulp",
-      "install": "always",
+      "install": "on_request",
       "license": "GPL-2.0-or-later",
       "name": "esp32s2ulp-elf",
       "platform_overrides": [
