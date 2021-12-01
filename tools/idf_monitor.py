@@ -23,7 +23,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# Contains elements taken from miniterm "Very simple serial terminal" which
+# Contains elements taken from miniterm "Very termsimple serial terminal" which
 # is part of pySerial. https://github.com/pyserial/pyserial
 # (C)2002-2015 Chris Liechti <cliechti@gmx.net>
 #
@@ -89,6 +89,7 @@ CMD_APP_FLASH = 4
 CMD_OUTPUT_TOGGLE = 5
 CMD_TOGGLE_LOGGING = 6
 CMD_ENTER_BOOT = 7
+CMD_MAKE_SPIFFS = 8
 
 # ANSI terminal codes (if changed, regular expressions in LineMatcher need to be udpated)
 ANSI_RED = '\033[1;31m'
@@ -300,6 +301,8 @@ class ConsoleParser(object):
             ret = (TAG_CMD, CMD_RESET)
         elif c == CTRL_F:  # Recompile & upload
             ret = (TAG_CMD, CMD_MAKE)
+        elif c == CTRL_B:  # Update spiffs partition
+            ret = (TAG_CMD, CMD_MAKE_SPIFFS)
         elif c in [CTRL_A, 'a', 'A']:  # Recompile & upload app only
             # "CTRL-A" cannot be captured with the default settings of the Windows command line, therefore, "A" can be used
             # instead
@@ -333,6 +336,7 @@ class ConsoleParser(object):
             ---    {reset:14} Reset target board via RTS line
             ---    {makecmd:14} Build & flash project
             ---    {appmake:14} Build & flash app only
+            ---    {spiffs:14} Run 'make spiffs-flash' to flash the spiffs partition
             ---    {output:14} Toggle output display
             ---    {log:14} Toggle saving output into file
             ---    {pause:14} Reset target into bootloader to pause app via RTS line
@@ -344,6 +348,7 @@ class ConsoleParser(object):
                    makecmd=key_description(CTRL_F),
                    appmake=key_description(CTRL_A) + ' (or A)',
                    output=key_description(CTRL_Y),
+                   spiffs=key_description(CTRL_B),
                    log=key_description(CTRL_L),
                    pause=key_description(CTRL_P),
                    menuexit=key_description(CTRL_X) + ' (or X)')
@@ -366,6 +371,8 @@ class ConsoleParser(object):
             ret = (TAG_CMD, CMD_STOP)
         elif c == CTRL_F:  # Recompile & upload
             ret = (TAG_CMD, CMD_MAKE)
+        elif c == CTRL_B:  # Recompile & upload spiffs only
+            ret = (TAG_CMD, CMD_MAKE_SPIFFS)
         elif c in [CTRL_A, 'a', 'A']:  # Recompile & upload app only
             # "CTRL-A" cannot be captured with the default settings of the Windows command line, therefore, "A" can be used
             # instead
@@ -390,7 +397,7 @@ class SerialReader(StoppableThread):
     def run(self):
         if not self.serial.is_open:
             self.serial.baudrate = self.baud
-            self.serial.rts = True  # Force an RTS reset on open
+            # self.serial.rts = True  # Force an RTS reset on open
             self.serial.open()
             time.sleep(0.005)  # Add a delay to meet the requirements of minimal EN low time (2ms for ESP32-C3)
             self.serial.rts = False
@@ -974,6 +981,8 @@ class Monitor(object):
             self.output_enable(True)
         elif cmd == CMD_MAKE:
             self.run_make('encrypted-flash' if self.encrypted else 'flash')
+        elif cmd == CMD_MAKE_SPIFFS:
+            self.run_make('spiffs-flash')
         elif cmd == CMD_APP_FLASH:
             self.run_make('encrypted-app-flash' if self.encrypted else 'app-flash')
         elif cmd == CMD_OUTPUT_TOGGLE:
