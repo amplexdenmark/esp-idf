@@ -71,6 +71,7 @@ key_description = miniterm.key_description
 # Control-key characters
 CTRL_A = '\x01'
 CTRL_B = '\x02'
+CTRL_D = '\x04'
 CTRL_F = '\x06'
 CTRL_H = '\x08'
 CTRL_R = '\x12'
@@ -90,6 +91,7 @@ CMD_OUTPUT_TOGGLE = 5
 CMD_TOGGLE_LOGGING = 6
 CMD_ENTER_BOOT = 7
 CMD_MAKE_SPIFFS = 8
+CMD_ASSERTDTR = 9
 
 # ANSI terminal codes (if changed, regular expressions in LineMatcher need to be udpated)
 ANSI_RED = '\033[1;31m'
@@ -299,6 +301,8 @@ class ConsoleParser(object):
             red_print(self.get_help_text())
         elif c == CTRL_R:  # Reset device via RTS
             ret = (TAG_CMD, CMD_RESET)
+        elif c == CTRL_D:  # Assert DTR Line
+            ret = (TAG_CMD, CMD_ASSERTDTR)
         elif c == CTRL_F:  # Recompile & upload
             ret = (TAG_CMD, CMD_MAKE)
         elif c == CTRL_B:  # Update spiffs partition
@@ -334,6 +338,7 @@ class ConsoleParser(object):
             ---    {menu:14} Send the menu character itself to remote
             ---    {exit:14} Send the exit character itself to remote
             ---    {reset:14} Reset target board via RTS line
+            ---    {assertdtr:14} Assert the DTR line
             ---    {makecmd:14} Build & flash project
             ---    {appmake:14} Build & flash app only
             ---    {spiffs:14} Run 'make spiffs-flash' to flash the spiffs partition
@@ -345,6 +350,7 @@ class ConsoleParser(object):
                    exit=key_description(self.exit_key),
                    menu=key_description(self.menu_key),
                    reset=key_description(CTRL_R),
+                   assertdtr=key_description(CTRL_D),
                    makecmd=key_description(CTRL_F),
                    appmake=key_description(CTRL_A) + ' (or A)',
                    output=key_description(CTRL_Y),
@@ -978,6 +984,11 @@ class Monitor(object):
             time.sleep(0.2)
             self.serial.setRTS(False)
             self.serial.setDTR(self.serial.dtr)  # usbser.sys workaround
+            self.output_enable(True)
+        elif cmd == CMD_ASSERTDTR:
+            self.serial.setDTR(True)
+            time.sleep(0.5)
+            self.serial.setDTR(False)
             self.output_enable(True)
         elif cmd == CMD_MAKE:
             self.run_make('encrypted-flash' if self.encrypted else 'flash')

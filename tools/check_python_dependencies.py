@@ -48,6 +48,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     not_satisfied = []
+    print("Python: %s" % (sys.executable))
     with open(args.requirements) as f:
         for line in f:
             line = line.strip()
