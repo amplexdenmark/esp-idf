@@ -1049,7 +1049,7 @@ void esp_vfs_select_triggered(esp_vfs_select_sem_t sem)
     }
 }
 
-void esp_vfs_select_triggered_isr(esp_vfs_select_sem_t sem, BaseType_t *woken)
+void IRAM_ATTR esp_vfs_select_triggered_isr(esp_vfs_select_sem_t sem, BaseType_t *woken)
 {
     if (sem.is_sem_local) {
         xSemaphoreGiveFromISR(sem.sem, woken);

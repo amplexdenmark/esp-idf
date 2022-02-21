@@ -402,7 +402,7 @@ static esp_err_t unregister_select(uart_select_args_t *args)
     return ret;
 }
 
-static void select_notif_callback_isr(uart_port_t uart_num, uart_select_notif_t uart_select_notif, BaseType_t *task_woken)
+static void IRAM_ATTR select_notif_callback_isr(uart_port_t uart_num, uart_select_notif_t uart_select_notif, BaseType_t *task_woken)
 {
     portENTER_CRITICAL_ISR(&s_registered_select_lock);
     for (int i = 0; i < s_registered_select_num; ++i) {
