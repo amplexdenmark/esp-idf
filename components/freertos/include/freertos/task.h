@@ -167,6 +167,7 @@ typedef struct xTASK_STATUS
 #if configTASKLIST_INCLUDE_COREID
     BaseType_t xCoreID;                              /*!< Core this task is pinned to (0, 1, or -1 for tskNO_AFFINITY). This field is present if CONFIG_FREERTOS_VTASKLIST_INCLUDE_COREID is set. */
 #endif
+	UBaseType_t uxNumLocks;		    /*!< Number of locks taken. */
 } TaskStatus_t;
 
 /** @endcond */

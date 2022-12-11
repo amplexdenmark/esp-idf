@@ -356,6 +356,10 @@ typedef struct tskTaskControlBlock       /* The old naming convention is used to
     #endif
 } tskTCB;
 
+size_t rtosGetuxBasePriorityOffset() {
+    return  ((size_t)&(((tskTCB *)0)->uxBasePriority));
+}
+
 /* The old tskTCB name is maintained above then typedefed to the new TCB_t name
  * below to enable the use of older kernel aware debuggers. */
 typedef tskTCB TCB_t;
@@ -1719,6 +1723,42 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB,
 
         return uxReturn;
     }
+
+	UBaseType_t uxTaskBasePriorityGet( TaskHandle_t xTask )
+	{
+	TCB_t *pxTCB;
+	UBaseType_t uxReturn;
+
+		taskENTER_CRITICAL(&xTaskQueueMutex);
+		{
+			/* If null is passed in here then we are changing the
+			priority of the calling function. */
+			pxTCB = prvGetTCBFromHandle( xTask );
+			#if ( configUSE_MUTEXES == 1 )
+			uxReturn = pxTCB->uxBasePriority;
+			#else
+			uxReturn = pxTCB->uxPriority;
+			#endif
+		}
+		taskEXIT_CRITICAL(&xTaskQueueMutex);
+
+		return uxReturn;
+	}
+
+	void uxTaskBasePrioritySet( TaskHandle_t xTask, UBaseType_t prio )
+	{
+#if ( configUSE_MUTEXES == 1 )
+	TCB_t *pxTCB;
+		taskENTER_CRITICAL(&xTaskQueueMutex);
+		{
+			/* If null is passed in here then we are changing the
+			priority of the calling function. */
+			pxTCB = prvGetTCBFromHandle( xTask );
+            pxTCB->uxBasePriority = prio;
+		}
+		taskEXIT_CRITICAL(&xTaskQueueMutex);
+#endif
+	}
 
 #endif /* INCLUDE_uxTaskPriorityGet */
 /*-----------------------------------------------------------*/
@@ -4294,10 +4334,12 @@ static void prvCheckTasksWaitingTermination( void )
         #if ( configUSE_MUTEXES == 1 )
             {
                 pxTaskStatus->uxBasePriority = pxTCB->uxBasePriority;
+                pxTaskStatus->uxNumLocks = pxTCB->uxMutexesHeld;
             }
         #else
             {
                 pxTaskStatus->uxBasePriority = 0;
+                pxTaskStatus->uxNumLocks = 0;
             }
         #endif
 
@@ -5151,7 +5193,16 @@ static void prvResetNextTaskUnblockTime( void )
 
                 /* Write the rest of the string. */
 #if configTASKLIST_INCLUDE_COREID
-                sprintf( pcWriteBuffer, "\t%c\t%u\t%u\t%u\t%hd\r\n", cStatus, ( unsigned int ) pxTaskStatusArray[ x ].uxCurrentPriority, ( unsigned int ) pxTaskStatusArray[ x ].usStackHighWaterMark, ( unsigned int ) pxTaskStatusArray[ x ].xTaskNumber, ( int ) pxTaskStatusArray[ x ].xCoreID );
+                char prio[10];
+                sprintf(prio, "%2u", ( unsigned int ) pxTaskStatusArray[ x ].uxCurrentPriority);
+                if (pxTaskStatusArray[ x ].uxCurrentPriority != pxTaskStatusArray[ x ].uxBasePriority)
+                    sprintf(prio + strlen(prio), "(%u)", ( unsigned int ) pxTaskStatusArray[ x ].uxBasePriority);
+				sprintf( pcWriteBuffer, "\t%c\t%s\t%u\t%u\t%hd\t%hd\r\n",
+                        cStatus, prio,
+                        ( unsigned int ) pxTaskStatusArray[ x ].usStackHighWaterMark,
+                        ( unsigned int ) pxTaskStatusArray[ x ].xTaskNumber,
+                        ( int ) pxTaskStatusArray[ x ].xCoreID,
+                        ( unsigned int ) pxTaskStatusArray[ x ].uxNumLocks );
 #else
                 sprintf( pcWriteBuffer, "\t%c\t%u\t%u\t%u\r\n", cStatus, ( unsigned int ) pxTaskStatusArray[ x ].uxCurrentPriority, ( unsigned int ) pxTaskStatusArray[ x ].usStackHighWaterMark, ( unsigned int ) pxTaskStatusArray[ x ].xTaskNumber ); /*lint !e586 sprintf() allowed as this is compiled with many compilers and this is a utility function only - not part of the core kernel implementation. */
 #endif
