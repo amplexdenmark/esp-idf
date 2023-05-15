@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-from __future__ import division, print_function
+#from __future__ import division, print_function
 
 import argparse
 import array
@@ -34,7 +34,7 @@ import zlib
 from builtins import bytes, int, range
 from io import open
 
-from future.moves.itertools import zip_longest
+from itertools import zip_longest
 
 try:
     from cryptography.hazmat.backends import default_backend
