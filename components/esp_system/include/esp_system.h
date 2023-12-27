@@ -53,17 +53,17 @@ typedef enum {
  * @brief Reset reasons
  */
 typedef enum {
-    ESP_RST_UNKNOWN,    //!< Reset reason can not be determined
-    ESP_RST_POWERON,    //!< Reset due to power-on event
-    ESP_RST_EXT,        //!< Reset by external pin (not applicable for ESP32)
-    ESP_RST_SW,         //!< Software reset via esp_restart
-    ESP_RST_PANIC,      //!< Software reset due to exception/panic
-    ESP_RST_INT_WDT,    //!< Reset (software or hardware) due to interrupt watchdog
-    ESP_RST_TASK_WDT,   //!< Reset due to task watchdog
-    ESP_RST_WDT,        //!< Reset due to other watchdogs
-    ESP_RST_DEEPSLEEP,  //!< Reset after exiting deep sleep mode
-    ESP_RST_BROWNOUT,   //!< Brownout reset (software or hardware)
-    ESP_RST_SDIO,       //!< Reset over SDIO
+ ESP_RST_UNKNOWN,    //00 !< Reset reason can not be determined
+ ESP_RST_POWERON,    //01 !< Reset due to power-on event
+ ESP_RST_EXT,        //02 !< Reset by external pin (not applicable for ESP32)
+ ESP_RST_SW,         //03 !< Software reset via esp_restart
+ ESP_RST_PANIC,      //04 !< Software reset due to exception/panic
+ ESP_RST_INT_WDT,    //05 !< Reset (software or hardware) due to interrupt watchdog
+ ESP_RST_TASK_WDT,   //06 !< Reset due to task watchdog
+ ESP_RST_WDT,        //07 !< Reset due to other watchdogs
+ ESP_RST_DEEPSLEEP,  //08 !< Reset after exiting deep sleep mode
+ ESP_RST_BROWNOUT,   //09 !< Brownout reset (software or hardware)
+ ESP_RST_SDIO,       //10 !< Reset over SDIO
 } esp_reset_reason_t;
 
 /**
