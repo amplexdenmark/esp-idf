@@ -817,10 +817,10 @@ esp_err_t IRAM_ATTR bootloader_flash_xmc_startup(void)
     // Exit UDPD
     bootloader_execute_flash_command(0xFF, 0, 0, 0);
     // Delay tXUDPD
-    esp_rom_delay_us(2000);
+    ets_delay_us(2000);
     // Release Power-down
     bootloader_execute_flash_command(0xAB, 0, 0, 0);
-    esp_rom_delay_us(20);
+    ets_delay_us(20);
     // Read flash ID and check again
     g_rom_flashchip.device_id = bootloader_read_flash_id();
     if (!is_xmc_chip_strict(g_rom_flashchip.device_id)) {
