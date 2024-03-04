@@ -232,7 +232,7 @@
       ],
       "export_vars": {},
       "info_url": "https://github.com/espressif/crosstool-NG",
-      "install": "always",
+      "install": "on_request",
       "license": "GPL-3.0-with-GCC-exception",
       "name": "xtensa-esp32s2-elf",
       "supported_targets": [
@@ -306,7 +306,7 @@
       ],
       "export_vars": {},
       "info_url": "https://github.com/espressif/crosstool-NG",
-      "install": "always",
+      "install": "on_request",
       "license": "GPL-3.0-with-GCC-exception",
       "name": "xtensa-esp32s3-elf",
       "supported_targets": [
@@ -430,7 +430,7 @@
       ],
       "export_vars": {},
       "info_url": "https://github.com/espressif/crosstool-NG",
-      "install": "always",
+      "install": "on_request",
       "license": "GPL-3.0-with-GCC-exception",
       "name": "riscv32-esp-elf",
       "supported_targets": [
